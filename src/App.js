@@ -80,7 +80,6 @@ const ProductWidget = ({children, product, index}): Node => {
 
 // TODO Product
 const Product: () => Node = ({ route, navigation }) => {
-
   const { itemId } = route.params;
   const product = useSelector((state) => state.database.productsRegistry[itemId])
   const dispatch = useDispatch()
@@ -90,6 +89,7 @@ const Product: () => Node = ({ route, navigation }) => {
       dispatch(setLoading(true))
       FakeStore.getProduct(itemId)
       .then((product) => {
+        navigation.setOptions({title: product.title});
         dispatch(pushProductsRegistry(product))
         console.log("Fetch", itemId);
       })
@@ -100,6 +100,7 @@ const Product: () => Node = ({ route, navigation }) => {
         dispatch(setLoading(false))
       })
     } else {
+      navigation.setOptions({title: product.title});
       console.log("Cached", itemId);
     }
   },[]);
@@ -173,12 +174,12 @@ const Home: () => Node = ({ navigation }) => {
 };
 
 const App: () => Node = () => {
-
+  //  options={({ route }) => ({ title: `Product ${route.params.itemId.toString()}` })}
   return (
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Fake Store" component={Home} />
-        <Stack.Screen name="Product" component={Product} options={({ route }) => ({ title: `Product ${route.params.itemId.toString()}` })}/>
+        <Stack.Screen name="Product" component={Product}/>
       </Stack.Navigator>
     </NavigationContainer>
   );
