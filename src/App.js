@@ -11,6 +11,7 @@ import type {Node} from 'react';
 import {
   Dimensions,
   SafeAreaView,
+  ScrollView,
   Image,
   FlatList,
   StatusBar,
@@ -80,6 +81,14 @@ const ProductWidget = ({children, product, index}): Node => {
 
 // TODO Product
 const Product: () => Node = ({ route, navigation }) => {
+
+  const isDarkMode = useColorScheme() === 'dark';
+
+  const backgroundStyle = {
+    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  };
+
+  const widthSize = Dimensions.get('window').width;
   const { itemId } = route.params;
   const product = useSelector((state) => state.database.productsRegistry[itemId])
   const dispatch = useDispatch()
@@ -105,10 +114,38 @@ const Product: () => Node = ({ route, navigation }) => {
     }
   },[]);
 
+  const transform = (txt) => {
+    let b = txt.split(' ');
+    b.filter((value, i) => b[i] = (value.charAt(0).toUpperCase() + value.slice(1)));
+    return b.join(' ');
+  }
+
   return (
-    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text style={styles.highlight}>Product {itemId}</Text>
-    </View>
+    product == null ? (
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={styles.highlight}>Fetching product {itemId}</Text>
+      </View>
+    ) : (
+      <ScrollView
+        contentInsetAdjustmentBehavior="automatic"
+        style={backgroundStyle}>
+        <Image
+          style={{ width: widthSize, height: widthSize, resizeMode: 'cover' }}
+          source={{uri: product.image}}
+        />
+          <View style={{ padding: 5 }}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', width: '100%' }}>
+              <Text>#{ product.id.toString() }</Text>
+              <Text>Category: { transform(product.category) }</Text>
+            </View>
+            <Text style={styles.productTitle}>{product.title}</Text>
+            <Text style={styles.productDescription}>{ product.description }</Text>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'flex-start', width: '100%' }}>
+              <Text style={{ fontSize: 20, fontWeight: '800', color: Colors.black }}>MYR { product.price.toFixed(2).toString() }</Text>
+            </View>
+          </View>
+      </ScrollView>
+    )
   );
 }
 
@@ -214,6 +251,18 @@ const styles = StyleSheet.create({
   highlight: {
     fontWeight: '700',
   },
+  productTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: Colors.black,
+  },
+  productDescription: {
+    marginTop: 8,
+    fontSize: 14,
+    fontWeight: '700',
+    color: Colors.dark,
+    marginBottom: 5
+  }
 });
 
 export default App;
