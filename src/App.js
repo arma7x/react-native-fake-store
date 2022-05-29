@@ -35,7 +35,8 @@ import { FakeStore } from './api'
 
 const Stack = createNativeStackNavigator();
 
-const Section = ({children, title}): Node => {
+// TODO ProductWidget
+const ProductWidget = ({children, title}): Node => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -61,6 +62,7 @@ const Section = ({children, title}): Node => {
   );
 };
 
+// TODO Product
 const Product: () => Node = ({ route, navigation }) => {
 
   const { itemId } = route.params;
@@ -93,8 +95,8 @@ const Product: () => Node = ({ route, navigation }) => {
   );
 }
 
+// TODO Product Listing
 const Home: () => Node = ({ navigation }) => {
-
 
   const products = useSelector((state) => state.database.products)
   const dispatch = useDispatch()
