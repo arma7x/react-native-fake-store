@@ -40,7 +40,7 @@ const Stack = createNativeStackNavigator();
 const ProductWidget = ({children, product, index}): Node => {
 
   const pad = (index + 1) % 2 === 0 ? 0 : 12;
-  const widthSize = (Dimensions.get('window').width - (12 * 2)) / 2;
+  const widthSize = (Dimensions.get('window').width - (14.5 * 2)) / 2;
 
   const isDarkMode = useColorScheme() === 'dark';
   return (
@@ -191,17 +191,15 @@ const styles = StyleSheet.create({
     elevation: 5
   },
   card: {
-    marginRight: 12,
     flex: 1,
     flexDirection: 'column',
     justifyContent: 'space-between',
     alignItems: 'flex-start',
     borderColor: 'black',
+    marginRight: 12,
     borderWidth: 0.5,
+    borderRadius: 2,
     overflow: 'hidden',
-    shadowColor: 'black',
-    shadowRadius: 5,
-    shadowOpacity: 1,
   },
   cardTitle: {
     fontSize: 16,
