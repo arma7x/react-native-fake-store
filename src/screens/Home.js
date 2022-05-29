@@ -9,6 +9,8 @@
 import React from 'react';
 import type {Node} from 'react';
 import {
+  Dimensions,
+  ActivityIndicator,
   SafeAreaView,
   StatusBar,
   FlatList,
@@ -31,6 +33,8 @@ import ProductWidget from '../widgets/ProductWidget'
 
 export default ({ navigation }): Node => {
 
+  const padHeight = (Dimensions.get('window').height - 58) / 2;
+  const loading = useSelector((state) => state.database.loading)
   const products = useSelector((state) => state.database.products)
   const dispatch = useDispatch()
 
@@ -74,6 +78,11 @@ export default ({ navigation }): Node => {
   return (
     <SafeAreaView style={backgroundStyle}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      {
+        loading && <View style={{ marginTop: padHeight, flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <ActivityIndicator />
+        </View>
+      }
       <FlatList
         style={{ paddingRight: 12, paddingLeft: 12 }}
         numColumns={2}
