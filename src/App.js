@@ -9,8 +9,10 @@
 import React from 'react';
 import type {Node} from 'react';
 import {
+  Dimensions,
   SafeAreaView,
-  ScrollView,
+  Image,
+  FlatList,
   StatusBar,
   StyleSheet,
   Text,
@@ -35,29 +37,43 @@ import { FakeStore } from './api'
 
 const Stack = createNativeStackNavigator();
 
-// TODO ProductWidget
-const ProductWidget = ({children, title}): Node => {
+const ProductWidget = ({children, product, index}): Node => {
+
+  const pad = (index + 1) % 2 === 0 ? 0 : 12;
+  const widthSize = (Dimensions.get('window').width - (12 * 2)) / 2;
+
   const isDarkMode = useColorScheme() === 'dark';
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.productWidgetContainer}>
+      <View style={{...styles.card, marginRight: pad, marginTop: (index <= 1 ? 12 : 0)}}>
+        <Image
+          style={{ resizeMode: 'cover', width: widthSize, height: 100 }}
+          source={{uri: product.image}}
+        />
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', padding: 5, width: '100%' }}>
+          {children}
+          <Text
+            style={[
+              styles.cardTitle,
+              {
+                color: isDarkMode ? Colors.white : Colors.dark,
+              },
+            ]}>
+            MYR {product.price.toFixed(2)}
+          </Text>
+        </View>
+        <View style={{ flex: 1, flexDirection: 'column', justifyContent: 'flex-start', alignItems: 'flex-start', paddingHorizontal: 5, width: '100%', minHeight: 50 }}>
+          <Text
+            style={[
+              styles.cardDescription,
+              {
+                color: isDarkMode ? Colors.light : Colors.grey,
+              },
+            ]}>
+            {product.title.length > 28 ? product.title.substring(0, 22) + '...' : product.title}
+          </Text>
+        </View>
+      </View>
     </View>
   );
 };
@@ -129,43 +145,29 @@ const Home: () => Node = ({ navigation }) => {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
   };
 
+  const renderItem = ({ index, item }) => {
+    return (
+      <ProductWidget product={item} index={index}>
+        <Button
+          title="Detail"
+          onPress={() => navigation.navigate('Product', {
+            itemId: item.id,
+          })}
+        />
+      </ProductWidget>
+    );
+  };
+
   return (
     <SafeAreaView style={backgroundStyle}>
-        <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-        <ScrollView
-            contentInsetAdjustmentBehavior="automatic"
-            style={backgroundStyle}>
-                <Header />
-                <View
-                    style={{
-                    backgroundColor: isDarkMode ? Colors.black : Colors.white,
-                }}>
-                    <Section title="Product 1">
-                        <Button
-                            title="Go to Product 1"
-                                onPress={() => navigation.navigate('Product', {
-                                itemId: 1,
-                            })}
-                        />
-                    </Section>
-                    <Section title="Product 2">
-                        <Button
-                            title="Go to Product 2"
-                                onPress={() => navigation.navigate('Product', {
-                                itemId: 2,
-                            })}
-                        />
-                    </Section>
-                    <Section title="Product 3">
-                        <Button
-                            title="Go to Product 3"
-                                onPress={() => navigation.navigate('Product', {
-                                itemId: 3,
-                            })}
-                        />
-                    </Section>
-                </View>
-        </ScrollView>
+      <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
+      <FlatList
+        style={{ paddingRight: 12, paddingLeft: 12 }}
+        numColumns={2}
+        data={products}
+        renderItem={renderItem}
+        keyExtractor={(product) => product.id}
+      />
     </SafeAreaView>
   );
 };
@@ -174,27 +176,41 @@ const App: () => Node = () => {
 
   return (
     <NavigationContainer>
-        <Stack.Navigator>
-            <Stack.Screen name="Fake Store" component={Home} />
-            <Stack.Screen name="Product" component={Product} options={({ route }) => ({ title: `Product ${route.params.itemId.toString()}` })}/>
-        </Stack.Navigator>
+      <Stack.Navigator>
+        <Stack.Screen name="Fake Store" component={Home} />
+        <Stack.Screen name="Product" component={Product} options={({ route }) => ({ title: `Product ${route.params.itemId.toString()}` })}/>
+      </Stack.Navigator>
     </NavigationContainer>
   );
 };
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  productWidgetContainer: {
+    paddingBottom: 12,
+    width: `50%`,
+    elevation: 5
   },
-  sectionTitle: {
-    fontSize: 24,
+  card: {
+    marginRight: 12,
+    flex: 1,
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    borderColor: 'black',
+    borderWidth: 0.5,
+    overflow: 'hidden',
+    shadowColor: 'black',
+    shadowRadius: 5,
+    shadowOpacity: 1,
+  },
+  cardTitle: {
+    fontSize: 16,
     fontWeight: '600',
   },
-  sectionDescription: {
+  cardDescription: {
     marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+    fontSize: 14,
+    fontWeight: '700',
   },
   highlight: {
     fontWeight: '700',
